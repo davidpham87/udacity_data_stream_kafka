@@ -1,7 +1,7 @@
 {
-    "name" : "arrival_value",
+    "name" : "arrival.value",
     "type" : "record",
-    "namespace" : "com.udacity.project.cta",
+    "namespace" : "com.udacity",
     "fields" : [ {
         "name" : "station_id",
         "type" : "int"

@@ -1,5 +1,5 @@
 {
-    "name" : "arrival.value",
+    "name" : "arrival",
     "type" : "record",
     "namespace" : "com.udacity",
     "fields" : [ {

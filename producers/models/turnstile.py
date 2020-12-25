@@ -17,22 +17,21 @@ class Turnstile(Producer):
 
     def __init__(self, station):
         """Create the Turnstile"""
-        station_name = (
-            station.name.lower()
-            .replace("/", "_and_")
-            .replace(" ", "_")
-            .replace("-", "_")
-            .replace("'", "")
-        )
+        station_name = (station.name.lower()
+                        .replace("/", "_and_")
+                        .replace(" ", "_")
+                        .replace("-", "_")
+                        .replace("'", ""))
 
         super().__init__(
-            f"cta.{station_name}.turnstile",
+            f"cta.stations.turnstile",
             key_schema=Turnstile.key_schema,
             value_schema=Turnstile.value_schema,
             num_partitions=10,
             num_replicas=3)
 
         self.station = station
+        self.station_name = station_name
         self.turnstile_hardware = TurnstileHardware(station)
 
     def run(self, timestamp, time_step):
@@ -41,8 +40,8 @@ class Turnstile(Producer):
 
         for _ in num_entries:
             value = {"station_id": self.station.station_id,
-                     "station_name": self.station.name,
-                     "line": self.color.name}
+                     "station_name": self.station_name,
+                     "line": self.station.color.name}
             self.producer.produce(
                 topc=self.topic_name,
                 key={"timestamp": self.time_millis()},

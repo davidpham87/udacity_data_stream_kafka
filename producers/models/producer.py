@@ -48,8 +48,9 @@ class Producer:
 
         self.producer = AvroProducer(
             self.broker_properties,
-            schema_registry=SCHEMA_REGISTRY_URL)
-
+            schema_registry=SCHEMA_REGISTRY_URL,
+            default_key_schema=key_schema,
+            default_value_schema=value_schema)
 
     def create_topic(self):
         """Creates the producer topic if it does not already exist"""
@@ -67,8 +68,7 @@ class Producer:
                       config={"cleanup.policy": "delete",
                               "compression.type": "lz4",
                               "delete.retention.ms": "2000",
-                              "file.delete.delay.ms": "2000"})]
-        )
+                              "file.delete.delay.ms": "2000"})])
 
         for topic, future in futures.items():
             try:

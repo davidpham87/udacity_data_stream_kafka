@@ -36,7 +36,7 @@ class Producer:
         self.key_schema = key_schema
         self.value_schema = value_schema
         self.num_partitions = num_partitions
-        self.num_replicas = 1 # num_replicas # Bug in the docker files, where only one producer is made
+        self.num_replicas = num_replicas # Bug in the docker files, where only one producer is made
 
         self.broker_properties = {
             "bootstrap.servers": BROKER_URLS,

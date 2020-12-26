@@ -1,12 +1,12 @@
 {
-  "name" : "arrival",
-  "type" : "record",
-  "namespace" : "com.duacity",
-  "fields" : [ {
-    "name" : "temperature",
-    "type" : "float"
-  }, {
-    "name" : "status",
-    "type" : "string"
-  } ]
+    "name" : "weather",
+    "type" : "record",
+    "namespace" : "com.udacity",
+    "fields" : [ {
+        "name" : "temperature",
+        "type" : "float"
+    }, {
+        "name" : "status",
+        "type" : "string"
+    }]
 }

@@ -1,7 +1,6 @@
 """Configures a Kafka Connector for Postgres Station data"""
 import json
 import logging
-
 import requests
 
 logger = logging.getLogger(__name__)
@@ -38,7 +37,7 @@ def configure_connector():
                "table.whitelist": "stations",
                "mode": "incrementing",
                "incrementing.column.name": "stop_id",
-               "topic.prefix": "cta.",
+               "topic.prefix": "org.cta.",
                # every minutes
                "poll.interval.ms": "60000"}}))
 

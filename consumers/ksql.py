@@ -12,20 +12,20 @@ logger = logging.getLogger(__name__)
 KSQL_URL = "http://localhost:8088"
 
 KSQL_STATEMENT = """
-CREATE TABLE turnstile (
+CREATE TABLE TURNSTILE (
     station_id INT,
     station_name VARCHAR,
     line VARCHAR
 ) WITH (
-    kafka_topic = 'cta.stations.turnstile' ,
+    kafka_topic='org.cta.stations.turnstile' ,
     value_format='avro',
     key = 'station_id'
 );
 
-CREATE TABLE turnstile_summary
+CREATE TABLE TURNSTILE_SUMMARY
 WITH (value_format='json') AS
    SELECT station_id, COUNT(station_id) AS count
-   FROM turnstil
+   FROM TURNSTILE
    GROUP BY station_id;
 """
 

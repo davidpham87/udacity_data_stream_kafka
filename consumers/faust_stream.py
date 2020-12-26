@@ -28,8 +28,8 @@ class TransformedStation(faust.Record):
 
 app = faust.App("stations-stream", broker="kafka://localhost:9092",
                 store="memory://")
-topic = app.topic("cta.stations", value_type=Station)
-out_topic = app.topic("cta.stations.table", partitions=1)
+topic = app.topic("org.cta.stations", value_type=Station)
+out_topic = app.topic("org.cta.stations.table", partitions=1)
 table = app.Table(
     "cta.stations.table",
     default=TransformedStation,
@@ -40,8 +40,7 @@ table = app.Table(
 @app.agent(topic)
 async def process_stations(stations):
     async for station in stations:
-        lines = [getattr(station, k) for k in ("red", "green", "blue")
-                 if getattr(station, k)]
+        lines = [k for k in ("red", "green", "blue") if getattr(station, k)]
         line = ":undefined"
         if lines:
             line = lines[0]

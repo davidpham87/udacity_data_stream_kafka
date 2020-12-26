@@ -16,7 +16,7 @@
         "type" : "int"
     }, {
         "name" : "train_id",
-        "type" : "int"
+        "type" : "string"
     }, {
         "name" : "direction",
         "type" : "string"

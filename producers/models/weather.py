@@ -30,17 +30,13 @@ class Weather(Producer):
     summer_months = set((6, 7, 8))
 
     def __init__(self, month):
-        #
-        #
-        # TODO: Complete the below by deciding on a topic name, number of partitions, and number of
-        # replicas
-        #
-        #
+
         super().__init__(
-            "cta.weather",
+            "org.cta.weather",
             key_schema=Weather.key_schema,
             value_schema=Weather.value_schema,
-        )
+            num_partitions=5,
+            num_replicas=3)
 
         self.status = Weather.status.sunny
         self.temp = 70.0
@@ -50,7 +46,7 @@ class Weather(Producer):
             self.temp = 85.0
 
         if Weather.key_schema is None:
-            with open(f"{Path(file).parents[0]}/schemas/weather_key.json") as f:
+            with open(f"{Path(__file__).parents[0]}/schemas/weather_key.json") as f:
                 Weather.key_schema = json.load(f)
 
         if Weather.value_schema is None:
@@ -69,19 +65,21 @@ class Weather(Producer):
 
     def run(self, month):
         self._set_weather(month)
-        logger.info("weather kafka proxy integration incomplete - skipping")
+
         resp = requests.post(
             f"{Weather.rest_proxy_url}/topics/{self.topic_name}",
             headers={"Content-Type": "application/vnd.kafka.avro.v2+json"},
             data=json.dumps({
-                "key_schema": json.dumps(self.key_schema),
-                "value_schema": json.dumps(self.value_schema),
-                "records": [{"key": self.time_millis(),
+                "key_schema": json.dumps(Weather.key_schema),
+                "value_schema": json.dumps(Weather.value_schema),
+                "records": [{"key": {"timestamp": self.time_millis()},
                              "value": {"temperature": self.temp,
-                                       "status": self.status}}]}))
+                                       "status": self.status.name}}]}))
+
         resp.raise_for_status()
 
         logger.debug(
             "sent weather data to kafka, temp: %s, status: %s",
             self.temp,
             self.status.name)
+        return resp

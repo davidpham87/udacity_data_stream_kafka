@@ -24,10 +24,10 @@ class Turnstile(Producer):
                         .replace("'", ""))
 
         super().__init__(
-            f"cta.stations.turnstile",
+            f"org.cta.stations.turnstile",
             key_schema=Turnstile.key_schema,
             value_schema=Turnstile.value_schema,
-            num_partitions=10,
+            num_partitions=5,
             num_replicas=3)
 
         self.station = station
@@ -38,11 +38,11 @@ class Turnstile(Producer):
         """Simulates riders entering through the turnstile."""
         num_entries = self.turnstile_hardware.get_entries(timestamp, time_step)
 
-        for _ in num_entries:
-            value = {"station_id": self.station.station_id,
+        for _ in range(num_entries):
+            value = {"station_id": self.station.station_id or -1,
                      "station_name": self.station_name,
                      "line": self.station.color.name}
             self.producer.produce(
-                topc=self.topic_name,
+                topic=self.topic_name,
                 key={"timestamp": self.time_millis()},
                 value=value)

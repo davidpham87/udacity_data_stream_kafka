@@ -27,13 +27,13 @@ class Station(Producer):
             .replace("'", "")
         )
 
-        topic_name = f"cta.{station_name}.arrival"
-
+        # topic_name = f"cta.{station_name}.arrival"
+        topic_name = f"org.cta.arrival"
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
             value_schema=Station.value_schema,
-            num_partitions=10,
+            num_partitions=5,
             num_replicas=3)
 
         self.station_id = int(station_id)
@@ -43,23 +43,28 @@ class Station(Producer):
         self.a_train = None
         self.b_train = None
         self.turnstile = Turnstile(self)
-
+        self.topic_name = topic_name
 
     def run(self, train, direction, prev_station_id, prev_direction):
         """Simulates train arrivals at this station"""
 
-        value = {"station_id": self.station_id,
+        missing = ":station/missing"
+        value = {"station_id": self.station_id or -1,
+                 "train_status": train.status.name,
                  "train_id": train.train_id,
                  "direction": direction,
                  "line": self.color.name,
-                 "train_status": train.status,
-                 "prev_station_id": prev_station_id,
-                 "prev_direciton": prev_direction}
-
-        self.producer.produce(
-           topic=self.topic_name,
-           key={"timestamp": self.time_millis()},
-           value=value)
+                 "prev_station_id": prev_station_id or -1,
+                 "prev_direction": prev_direction or missing}
+        try:
+            self.producer.produce(
+                topic=self.topic_name,
+                key={"timestamp": self.time_millis()},
+                value=value)
+            print(f"Event sent: {value}")
+        except Exception as e:
+            print(e)
+            print(f"Dismissed value: {value}")
 
     def __str__(self):
         return "Station | {:^5} | {:<30} | Direction A: | {:^5} | departing to {:<30} | Direction B: | {:^5} | departing to {:<30} | ".format(

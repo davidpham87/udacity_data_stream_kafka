@@ -35,12 +35,15 @@ class KafkaConsumer:
         self.consume_timeout = consume_timeout
         self.offset_earliest = offset_earliest
 
-        self.broker_properties = {
+        brocker_properties = {
             "bootstrap.servers": BROKER_URLS,
             "group.id": topic_name_pattern,
-            "compression.type": "lz4",
-            "default.topic.config": {"auto.offset.reset": "earliest"}
-        }
+            "compression.type": "lz4"}
+
+        if self.offset_earliest:
+            brocker_properties["default.topic.config"] = {"auto.offset.reset": "earliest"}
+
+        self.broker_properties = brocker_properties
 
         if is_avro is True:
             self.broker_properties["schema.registry.url"] = SCHEMA_REGISTRY_URL
@@ -70,7 +73,6 @@ class KafkaConsumer:
         """Polls for a message. Returns 1 if a message was received, 0 otherwise"""
         return_value = 0
         message = None
-
         try:
             message = self.consumer.poll(timeout=self.consume_timeout)
         except SerializerError as e:
